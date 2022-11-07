@@ -27,9 +27,15 @@ if __name__ == '__main__':
   data = {
       'service': '2d.handeye.calibration.vathos.net',
       'parameters': {
-          'session': 'handeye_calib_service_test',
+          'session':
+              'handeye_calib_service_test',
           'pattern_size': [9, 7],
-          'pattern_side_length': 0.02
+          'pattern_side_length':
+              0.02,
+          'intrinsics': [
+              7252.223304681514, 0.0, 0.0, 0.0, 7245.700711835546, 0.0,
+              1256.5517597471978, 980.6156156257105, 1.0
+          ]
       }
   }
 
