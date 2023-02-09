@@ -16,6 +16,7 @@ import requests
 import numpy as np
 
 from lib.authentication import get_service_account_token
+from lib.files import upload_data
 
 if __name__ == '__main__':
 
@@ -23,25 +24,31 @@ if __name__ == '__main__':
   token = get_service_account_token(os.environ.get('CLIENT_ID'),
                                     os.environ.get('CLIENT_SECRET'))
 
+  # upload test data
+  session = upload_data('./resources/poses.csv', token)
+
   # fill in task parameters
   data = {
       'service': '2d.handeye.calibration.vathos.net',
+      'tag': 'feature-nonlinear-refinement',
       'parameters': {
+          'eye_in_hand':
+              True,
           'session':
-              'handeye_calib_service_test',
-          'pattern_size': [9, 7],
+              session,
+          'pattern_size': [10, 7],
           'pattern_side_length':
-              0.02,
+              0.025,
           'intrinsics': [
-              7252.223304681514, 0.0, 0.0, 0.0, 7245.700711835546, 0.0,
-              1256.5517597471978, 980.6156156257105, 1.0
+              1759.1642, 0.0, 0.0, 0.0, 1764.0677, 0.0, 962.8343, 595.8946, 1.0
           ]
       }
   }
 
   task_request = requests.post('https://staging.api.gke.vathos.net/v1/tasks',
-                               headers={'Authorization': 'Bearer ' + token},
-                               json=data)
+                               headers={'Authorization': f'Bearer {token}'},
+                               json=data,
+                               timeout=5)
 
   task_data = task_request.json()
   logging.info('Started task %s', task_data)
@@ -53,14 +60,15 @@ if __name__ == '__main__':
     sleep(5.0)
     task_status_request = requests.get(
         f'https://staging.api.gke.vathos.net/v1/tasks/{task_data["_id"]}',
-        headers={'Authorization': 'Bearer ' + token})
+        headers={'Authorization': f'Bearer {token}'},
+        timeout=5)
     task_data = task_status_request.json()
 
     # break out of the loop as soon as the task is completed
     if task_data['status'] == 1:
-      eye2hand = np.reshape(
-          np.array(task_data['result']['eye2hand'], dtype='f'), (4, 4), 'F')
-      logging.info('Calibration result: %s', eye2hand)
+      result = np.reshape(np.array(task_data['result']['transform'], dtype='f'),
+                          (4, 4), 'F')
+      logging.info('Calibration result: %s', result)
       break
     elif task_data['status'] == -1:
       logging.error('Task failed')

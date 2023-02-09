@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 ################################################################################
 #
-# Copyright (c) 2020, Vathos GmbH
+# Copyright (c) 2019-2023, Vathos GmbH
 #
 # All rights reserved.
 #
@@ -20,5 +20,6 @@ def get_service_account_token(client_id, client_secret):
           'client_id': client_id,
           'client_secret': client_secret,
           'grant_type': 'client_credentials',
-      })
+      },
+      timeout=5)
   return token_response.json()['access_token']
