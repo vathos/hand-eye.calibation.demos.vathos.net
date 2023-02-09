@@ -30,7 +30,6 @@ if __name__ == '__main__':
   # fill in task parameters
   data = {
       'service': '2d.handeye.calibration.vathos.net',
-      'tag': 'feature-nonlinear-refinement',
       'parameters': {
           'eye_in_hand':
               True,
