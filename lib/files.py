@@ -9,18 +9,11 @@
 """Uploads calibration images and poses to the cloud."""
 
 import csv
-import logging
-from datetime import datetime
 
-from imageio import imread
 import requests
-import numpy as np
 
 
-def upload_data(csv_file_name, token, session_prefix='handeye_'):
-
-  session = session_prefix + datetime.now().isoformat()
-  logging.info('Storing data under session id %s', session)
+def upload_data(csv_file_name, token, session):
 
   with open(csv_file_name, 'r', encoding='utf-8') as file:
     reader = csv.reader(file)
@@ -56,5 +49,3 @@ def upload_data(csv_file_name, token, session_prefix='handeye_'):
                     },
                     headers={'Authorization': f'Bearer {token}'},
                     timeout=5)
-
-    return session

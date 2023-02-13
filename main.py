@@ -11,6 +11,7 @@
 import os
 import logging
 from time import sleep
+from datetime import datetime
 
 import requests
 import numpy as np
@@ -24,8 +25,12 @@ if __name__ == '__main__':
   token = get_service_account_token(os.environ.get('CLIENT_ID'),
                                     os.environ.get('CLIENT_SECRET'))
 
-  # upload test data
-  session = upload_data('./resources/poses.csv', token)
+  # generate a random session id
+  session = 'handeye_' + datetime.now().isoformat()
+  logging.info('Storing data under session id %s', session)
+
+  # upload images and poses under that session id
+  upload_data('./resources/poses.csv', token, session)
 
   # fill in task parameters
   data = {
